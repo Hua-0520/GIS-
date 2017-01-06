@@ -1,0 +1,158 @@
+program CoorExchange
+!本程序主要功能是用于在GIS中经纬度的多种度分秒格式的相互转换
+!作者：马国华
+!单位：中央民族大学 生命与环境科学学院 1407实验室
+!联系方式：maguohuall@163.com
+!使用语言：FORTRAN90
+!时间：2017年1月
+
+implicit none
+integer::choice,N,I
+integer,parameter::FIDin=11,FIDout=12,FIDT=99,KDReal=8
+real(kind=KDReal)::ad,af,am,bd,bf,bm
+real(kind=KDReal)::aad,aaf,aam,bbd,bbf,bbm
+real(kind=KDReal),parameter::dd=60
+ad=0
+af=0
+am=0
+bd=0
+bf=0
+bm=0
+aad=0
+aaf=0
+aam=0
+bbd=0
+bbf=0
+bbm=0
+WRITE(*,*) "------------------欢迎使用度分秒格式互转程序------------------"
+
+100 WRITE(*,*) "请选择坐标转换类型："
+WRITE(*,*) "          ----------------------------------          "
+WRITE(*,*) "          |     1  度分秒  ->     度       |          "
+WRITE(*,*) "          |     2  度分秒  ->    度分      |          "
+WRITE(*,*) "          |     3   度分   ->     度       |          "
+WRITE(*,*) "          |     4   度分   ->   度分秒     |          "
+WRITE(*,*) "          |     5    度    ->    度分      |          "
+WRITE(*,*) "          |     6    度    ->   度分秒     |          "
+WRITE(*,*) "          ----------------------------------          "
+READ(*,*) choice
+WRITE(*,*) "请阅读Readme.txt文件确认所需要求文件格式！"
+
+open(FIDT,FILE="Readme.txt",ACTION="WRITE")
+WRITE (FIDT,*)"--------------------欢迎使用度分秒格式互转程序----------------"
+WRITE (FIDT,*)
+WRITE (FIDT,*)"----------------------请认真阅读文件格式要求------------------"
+WRITE (FIDT,*)
+WRITE (FIDT,*)
+WRITE (FIDT,*)"请将数据按如下格式放在in.txt文件中！"
+WRITE (FIDT,*)
+WRITE (FIDT,*)"xx  xx  xx   ","   xx  xx  xx"
+WRITE (FIDT,*)
+WRITE (FIDT,*)"注：分别代表经纬度的度分秒三个部分,"
+WRITE (FIDT,*)"    没有的部分可以不写。"
+WRITE (FIDT,*)
+WRITE (FIDT,*)"例如："
+WRITE (FIDT,*)"原数据为:"
+WRITE (FIDT,*)'40°58’20.28”  108°56’01.96”'
+WRITE (FIDT,*)'40°59’6.89”   108°56’14.89”'
+WRITE (FIDT,*)"需写作如下格式："
+
+WRITE (FIDT,*)"40  58  20.28      108  56  01.96"
+WRITE (FIDT,*)"40  59  6.89       108  56  14.89"
+WRITE (FIDT,*)
+WRITE (FIDT,*)
+WRITE (FIDT,*)"----------------与空格数的多少没有关系，但必须隔开------------"
+WRITE (FIDT,*)
+
+CLOSE(FIDT)
+WRITE(*,*)"请输入转换坐标个数："
+Read(*,*) N
+open(FIDin,FILE="in.txt",STATUS="OLD",ACTION="READ") 
+open(FIDout,FILE="out.txt",ACTION="WRITE") 
+select case (choice)
+	case (1)
+		DO i=1,N
+			read(FIDin,*)ad,af,am,bd,bf,bm
+			aad=ad+af/dd+am/dd/dd
+			bbd=bd+bf/dd+bm/dd/dd
+			Write(FIDout,'(2(f17.13,4x))')aad,bbd
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	case (2)
+		DO i=1,N
+			read(FIDin,*)ad,af,am,bd,bf,bm
+			aad=ad
+			bbd=bd
+			aaf=af+am/dd
+			bbf=bf+bm/dd
+			Write(FIDout,102)INT(aad),aaf,INT(bbd),bbf
+			102 Format(2(I3,2x,f7.4,4x))
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	case (3)
+		DO i=1,N
+			read(FIDin,*)ad,af,bd,bf
+			aad=ad+af/dd
+			bbd=bd+bf/dd
+			Write(FIDout,'(2(f17.13,4x))')aad,bbd
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	case (4)
+		DO i=1,N
+			read(FIDin,*)ad,af,bd,bf
+			aad=ad
+			bbd=bd
+		  aaf=floor(af)
+			bbf=floor(bf)
+			aam=(af-aaf)*dd
+			bbm=(bf-bbf)*dd
+			Write(FIDout,104)int(aad),int(aaf),aam,int(bbd),int(bbf),bbm
+			104 Format(2(I3,2x,I3,2x,f7.4,4x))
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	case (5)
+		DO i=1,N
+			read(FIDin,*)ad,bd
+			aad=floor(ad)
+			bbd=floor(bd)
+		  aaf=(ad-aad)*dd
+			bbf=(bd-bbd)*dd
+			Write(FIDout,105)floor(aad),aaf,floor(bbd),bbf
+			105 Format(2(I3,2x,f7.4,4x))
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	case (6)
+		DO i=1,N
+			read(FIDin,*)ad,bd
+			aad=floor(ad)
+			bbd=floor(bd)
+		  aaf=floor((ad-aad)*dd)
+			bbf=floor((bd-bbd)*dd)
+			aam=((ad-aad)*dd-aaf)*dd
+			bbm=((bd-bbd)*dd-bbf)*dd
+			Write(FIDout,106)floor(aad),floor(aaf),aam,floor(bbd),floor(bbf),bbm
+			106 Format(2(I3,2x,I3,2x,f7.4,4x))
+		End Do
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+	CASE DEFAULT 
+		WRITE(*,*)"请重新输入1-6的整数！"
+
+		CLOSE(FIDin)
+		CLOSE(FIDout)
+		GOTO 100
+END SELECT
+
+WRITE(*,*) "-----------------程序转换结束，欢迎再次使用！-----------------"
+END program CoorExchange
