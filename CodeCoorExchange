@@ -108,7 +108,7 @@ select case (choice)
 			read(FIDin,*)ad,af,bd,bf
 			aad=ad
 			bbd=bd
-		  aaf=floor(af)
+		  	aaf=floor(af)
 			bbf=floor(bf)
 			aam=(af-aaf)*dd
 			bbm=(bf-bbf)*dd
@@ -123,7 +123,7 @@ select case (choice)
 			read(FIDin,*)ad,bd
 			aad=floor(ad)
 			bbd=floor(bd)
-		  aaf=(ad-aad)*dd
+		  	aaf=(ad-aad)*dd
 			bbf=(bd-bbd)*dd
 			Write(FIDout,105)floor(aad),aaf,floor(bbd),bbf
 			105 Format(2(I3,2x,f7.4,4x))
@@ -136,7 +136,7 @@ select case (choice)
 			read(FIDin,*)ad,bd
 			aad=floor(ad)
 			bbd=floor(bd)
-		  aaf=floor((ad-aad)*dd)
+		  	aaf=floor((ad-aad)*dd)
 			bbf=floor((bd-bbd)*dd)
 			aam=((ad-aad)*dd-aaf)*dd
 			bbm=((bd-bbd)*dd-bbf)*dd
